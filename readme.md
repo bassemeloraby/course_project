@@ -107,6 +107,40 @@ import { Link, useLoaderData } from "react-router-dom";
       })}
     </div>
 
+====================================================
+
+# Web Frontend_Backend MERN Project  react-toastify 3-4
+
+
+https://www.npmjs.com/package/react-toastify
+
+npm i react-toastify
+
+>> main.jsx
+
+import "react-toastify/dist/ReactToastify.css";
+
+import { ToastContainer } from "react-toastify";
+
+<ToastContainer position="top-right" />
+
+
+>> Products.jsx
+
+
+ if (products.length === 0) {
+    toast.error("No products found!");
+  } else {
+    toast.success("Products loaded successfully!");
+    console.log(products);
+    return { products };
+  }
+
+
+
+
+
+
 
 
    
