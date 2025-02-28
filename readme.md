@@ -140,6 +140,64 @@ import { ToastContainer } from "react-toastify";
 
 # Web Frontend_Backend MERN Project  Single Product Page 3-5
 
+>> SingleProduct.jsx
+
+import { customFetch } from "../utils";
+import { useLoaderData, Link } from "react-router-dom";
+
+const url = "/products";
+
+export const loader = async ({ params }) => {
+  const { id } = params;
+  console.log(id);
+
+  const response = await customFetch(`${url}/${id}`);
+  const product = response.data;
+  console.log(product);
+  return { product };
+};
+
+
+ <section>
+      <div className="text-md breadcrumbs">
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/products">Products</Link>
+          </li>
+        </ul>
+      </div>
+      {/* PRODUCT */}
+      <div>
+        <h1 className="capitalize text-3xl font-bold">{tradeName}</h1>
+        <h4 className="text-xl text-content font-bold mt-2">
+          {price}
+        </h4>
+      </div>
+    </section>
+
+
+----
+import { toast } from "react-toastify";
+
+
+if (!product) {
+      toast.error("No product found!");
+    } else {
+      toast.success("Single Product is loaded !");
+      console.log(product);
+      return { product };
+    }
+
+
+>> App.jsx
+
+import { loader as singleProductLoader } from "./pages/SingleProduct";
+
+loader: singleProductLoader
+
 
 
 
