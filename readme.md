@@ -308,3 +308,46 @@ export const action = async ({ request }) => {
         </div>
       </Form>
     </section>
+
+====================================================
+
+# Web Frontend_Backend MERN Project Delete Product 3-7
+
+>> SingleProduct.jsx
+
+ <section>
+        <button onClick={deleteHandler} className="btn btn-primary capitalize">
+          delete
+        </button>
+      </section>
+
+
+const navigate = useNavigate()
+
+  const deleteHandler = async () => {
+    try {
+      const response = await customFetch.delete(`${url}/${product._id}`);
+      console.log(response)
+       toast.success("product is deleted successfully");
+       return navigate("/");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.error?.message;
+
+      toast.error(errorMessage);
+      return null;
+    }
+    
+  };
+
+======================================================
+# Web Frontend_Backend MERN Project Update Product Page 3-8
+
+- create UpdateProduct.jsx file in pages
+- add to index.jsx file in pages
+
+>> App.jsx
+
+
+
+
