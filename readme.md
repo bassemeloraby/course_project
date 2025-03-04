@@ -459,5 +459,97 @@ const ProductUpdate = () => {
 export default ProductUpdate;
 
 
+======================================================
+# Web Frontend_Backend MERN Project Themes 3-9
+
+>> Navbar.jsx
+
+import { BsMoonFill, BsSunFill } from "react-icons/bs";
+
+{/* THEME SETUP */}
+            <label className="swap swap-rotate">
+              <input type="checkbox" />
+              {/* sun icon*/}
+              <BsSunFill className="swap-on h-4 w-4" />
+              {/* moon icon*/}
+              <BsMoonFill className="swap-off h-4 w-4" />
+            </label>
+
+
+onChange={handleTheme}
+
+  const [theme, setTheme] = useState();
+
+  const handleTheme = () => {
+    setTheme(!theme);
+  };
+
+
+https://daisyui.com/docs/themes/
+
+https://www.youtube.com/watch?v=vFam7hEZTu8&list=PLhDKyjgkNJZWLEbxiVcAU-LFyEILyzYe8&index=13
+
+>> tailwind.config.cjs
+
+ daisyui: {
+    themes: ["winter", "dracula"],
+  },
+
+
+>> Navbar.jsx
+
+
+const themes = {
+  winter: "winter",
+  dracula: "dracula",
+};
+
+  const [theme, setTheme] = useState(themes.winter);
+
+const handleTheme = () => {
+    const { winter, dracula } = themes;
+    const newTheme = theme === winter ? dracula : winter;
+    document.documentElement.setAttribute("data-theme", theme);
+
+    setTheme(newTheme);
+  };
+
+
+  useEffect(()=>{},[])
+
+useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const getThemeFromLocalStorage = () => {
+  return localStorage.getItem("theme") || themes.winter;
+};
+
+  const [theme, setTheme] = useState(getThemeFromLocalStorage());
+
+--
+
+
+
+
+
+
+
+
+
+
+const getThemeFromLocalStorage = () => {
+  const theme = localStorage.getItem("theme") || themes.winter;
+  document.documentElement.setAttribute("data-theme", theme);
+  return theme;
+};
+
+  
+
+======================================================
+# Web Frontend_Backend MERN Project Authentication userModel 3-9
+
 
 
