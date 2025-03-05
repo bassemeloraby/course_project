@@ -529,16 +529,94 @@ useEffect(() => {
 
   const [theme, setTheme] = useState(getThemeFromLocalStorage());
 
---
+--  
+======================================================
+# Web Frontend_Backend MERN Project react-redux @reduxjs/toolkit 3-10
+
+https://react-redux.js.org/introduction/getting-started
+
+https://www.npmjs.com/package/react-redux
+
+https://redux-toolkit.js.org/introduction/getting-started
+
+https://www.npmjs.com/package/@reduxjs/toolkit
+
+
+- npm install react-redux @reduxjs/toolkit
+- create app and features and auth folders
+- create authSlice.js file
+- create store.js file
 
 
 
+>> store.js
+
+import { configureStore } from "@reduxjs/toolkit";
 
 
+export const store = configureStore({
+  reducer: {},
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
+
+>> main.jsx
+
+import { store } from "./app/store";
+import { Provider } from "react-redux";
 
 
+<Provider store={store}>
+  <App />
+  <ToastContainer position="bottom-right" autoClose={1000}/>
+</Provider>
 
 
+>> authSlice.js
+
+import { createSlice } from "@reduxjs/toolkit";
+
+export const authSlice = createSlice({});
+
+export default authSlice.reducer;
+
+const initialState = {
+  user: null,
+  isError: false,
+  isSuccess: false,
+  isLoading: false,
+  message: "",
+};
+
+ name: "auth",
+  initialState,
+  reducers: {}
+
+
+>> store.js
+
+import authReducer from "../app/features/auth/authSlice";
+
+auth: authReducer,
+
+-----------------------
+redux devtools extension
+
+--------------------
+
+======================================================
+# Web Frontend_Backend MERN Project Themes global 3-11
+
+https://www.youtube.com/watch?v=0vtP3SGlqMI&list=PLhDKyjgkNJZW7prwMpN4G_kBohsOCD4Iz&index=8
+
+>> authSlice.js
+
+const themes = {
+  winter: "winter",
+  dracula: "dracula",
+};
 
 const getThemeFromLocalStorage = () => {
   const theme = localStorage.getItem("theme") || themes.winter;
@@ -546,10 +624,21 @@ const getThemeFromLocalStorage = () => {
   return theme;
 };
 
-  
-
-======================================================
-# Web Frontend_Backend MERN Project Authentication userModel 3-9
+  theme: getThemeFromLocalStorage(),
 
 
+ toggleTheme: (state) => {
+      const { dracula, winter } = themes;
+      state.theme = state.theme === dracula ? winter : dracula;
+      document.documentElement.setAttribute("data-theme", state.theme);
+      localStorage.setItem("theme", state.theme);
+    },
 
+export const { toggleTheme } = authSlice.actions;
+
+>> Navbar.jsx
+
+  const dispatch = useDispatch();
+
+
+    dispatch(toggleTheme());
