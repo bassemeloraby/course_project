@@ -637,6 +637,8 @@ const getThemeFromLocalStorage = () => {
 export const { toggleTheme } = authSlice.actions;
 
 >> Navbar.jsx
+import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
   const dispatch = useDispatch();
 
