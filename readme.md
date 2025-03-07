@@ -644,3 +644,490 @@ import { useDispatch } from "react-redux";
 
 
     dispatch(toggleTheme());
+============================================================
+# Web Frontend_Backend MERN Project User Model 3-12
+
+
+>> server/models/UserModel.js
+
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema(
+  {
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+  },
+  { timestamps: true }
+);
+
+export const User = mongoose.model("User", userSchema);
+
+----
+============================================================
+# Web Frontend_Backend MERN Project bcryptjs jsonwebtoken 3-13
+
+https://www.npmjs.com/package/bcryptjs
+
+
+https://jwt.io/
+https://www.npmjs.com/package/jsonwebtoken
+
+
+
+---
+============================================================
+# Web Frontend_Backend MERN Project authController registerUser 3-14
+
+npm i bcryptjs jsonwebtoken
+
+>> controllers/authController.js
+
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { User } from "../models/userModel.js";
+
+// Register a new user
+export const registerUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+============================================================
+# Web Frontend_Backend MERN Project authController loginUser 3-15
+
+>> controllers/authController.js
+
+// Login user
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+============================================================
+# Web Frontend_Backend MERN Project  authRoutes 3-18
+
+>> routes/authRoutes.js
+
+import express from "express";
+import { registerUser, loginUser, getUserProfile } from "../controllers/authController.js";
+import { authenticateUser } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+// Public routes
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+
+// Protected route
+router.get("/profile", authenticateUser, getUserProfile);
+
+export default router;
+
+----
+
+>> index.js
+
+import authRoutes from "./routes/authRoutes.js";
+
+// Routes
+app.use("/api/auth", authRoutes);
+
+---
+Testing the API
+
+Register a User :
+POST /api/auth/register
+Body: { "username": "john", "email": "john@example.com", "password": "password123" }
+
+Login :
+POST /api/auth/login
+Body: { "email": "john@example.com", "password": "password123" }
+Response: { "message": "Login successful", "token": "your_jwt_token" }
+
+Get Profile :
+GET /api/auth/profile
+Header: Authorization: Bearer your_jwt_token
+
+============================================================
+# Web Frontend_Backend MERN Project  Register Page 3-19
+
+
+>> Register.jsx
+
+import { Form, Link, redirect } from "react-router-dom";
+import { FormInput, SubmitBtn } from "../components";
+import { customFetch } from "../utils";
+import { toast } from "react-toastify";
+
+const url = "/auth/register";
+
+export const action = async ({ request }) => {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+  console.log(data);
+  try {
+    const response = await customFetch.post(url, data);
+    console.log(response.data.message);
+    toast.success(response.data.message);
+    return redirect("/login");
+  } catch (error) {
+    const errorMessage =
+      error?.response?.data?.error?.message ||
+      "please double check your credentials";
+
+    toast.error(errorMessage);
+    return null;
+  }
+};
+
+const Register = () => {
+  return (
+    <section className="h-screen grid place-items-center">
+      <Form
+        method="POST"
+        className="card w-96 p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
+      >
+        <h4 className="text-center text-3xl font-bold">Register</h4>
+        <FormInput type="text" label="username" name="username" />
+        <FormInput type="email" label="email" name="email" />
+        <FormInput type="password" label="password" name="password" />
+        <div className="mt-4">
+          <SubmitBtn text="register" />
+        </div>
+        <p className="text-center">
+          Already a member?
+          <Link
+            to="/login"
+            className="ml-2 link link-hover link-primary capitalize"
+          >
+            login
+          </Link>
+        </p>
+      </Form>
+    </section>
+  );
+};
+
+export default Register;
+
+
+>> App.jsx
+
+import { action as registerAction } from "./pages/Register";
+
+action: registerAction, // use the action to register a new user
+
+============================================================
+# Web Frontend_Backend MERN Project  Login Page 3-20
+
+
+>> Login.jsx
+
+import { Form, Link, redirect } from "react-router-dom";
+import { FormInput, SubmitBtn } from "../components";
+import { customFetch } from "../utils";
+import { toast } from "react-toastify";
+import { loginUser } from "../app/features/auth/authSlice";
+
+const url = "/auth/login";
+
+export const action =
+  (store) =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+    console.log(data);
+    try {
+      const response = await customFetch.post(url, data);
+      console.log(response.data);
+      store.dispatch(loginUser(response.data));
+      toast.success("logged in successfully");
+      return redirect("/");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        "please double check your credentials";
+
+      toast.error(errorMessage);
+      return null;
+    }
+  };
+
+const Login = () => {
+  return (
+    <section className="h-screen grid place-items-center">
+      <Form
+        method="post"
+        className="card w-96  p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
+      >
+        <h4 className="text-center text-3xl font-bold">Login</h4>
+        <FormInput type="email" label="email" name="email" />
+        <FormInput type="password" label="password" name="password" />
+        <div className="mt-4">
+          <SubmitBtn text="login" />
+        </div>
+        <p className="text-center">
+          Not a member yet?{" "}
+          <Link
+            to="/register"
+            className="ml-2 link link-hover link-primary capitalize"
+          >
+            register
+          </Link>
+          <Link to="/" className="ml-2 link link-hover link-primary capitalize">
+            home
+          </Link>
+        </p>
+      </Form>
+    </section>
+  );
+};
+
+export default Login;
+
+
+>> App.jsx
+
+import { action as loginAction } from "./pages/Login";
+
+action: loginAction, // use the action to login a user
+
+---------------
+>> authSlice.js
+
+loginUser: (state, action) => {
+      console.log(action);
+      const user = {
+        username: action.payload.username,
+        userRole: action.payload.role,
+        token: action.payload.jwt,
+      };
+      state.user = user;
+      localStorage.setItem("user", JSON.stringify(user));
+    },
+
+--------------
+>> authController.js
+
+res
+      .status(200)
+      .json({
+        message: "Login successful",
+        token,
+        username: user.username,
+        role: user.role,
+      });
+
+
+>> Header.jsx
+
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+const Header = () => {
+
+  const user = useSelector((state) => state.auth.user);
+
+  console.log(user.username)
+
+  return (
+    <header className=" bg-neutral py-2 text-neutral-content ">
+      <div className="align-element flex justify-center sm:justify-end ">
+        {user ? (
+          <div className="flex gap-x-2 sm:gap-x-8 items-center">
+            <p className="text-xs sm:text-sm">Hello, {user.username}</p>
+            <button
+              className="btn btn-xs btn-outline btn-primary "
+              // onClick={handleLogout}
+            >
+              logout
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-x-6 justify-center items-center">
+            <Link to="/login" className="link link-hover text-xs sm:text-sm">
+              Sign in / Guest
+            </Link>
+            <Link to="/register" className="link link-hover text-xs sm:text-sm">
+              Create an Account
+            </Link>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+
+----------------------------
+
+>> authSlice.js
+
+logoutUser: (state) => {
+      state.user = null;
+      // localStorage.clear()
+      localStorage.removeItem("user");
+      toast.success("Logged out successfully");
+    },
+
+
+
+    export const { loginUser, toggleTheme ,logoutUser} = authSlice.actions;
+
+
+>>  Header.jsx
+
+onClick={handleLogout}
+
+
+const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    navigate("/");
+    dispatch(logoutUser());
+  };
+
+------------
+
+>> AuthGuard.jsx
+
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+
+// eslint-disable-next-line react/prop-types
+const AuthGuard = ({ children }) => {
+  const isAuthenticated = useSelector((state) => state.auth.user);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+};
+
+export default AuthGuard;
+
+--------------------
+
+>> App.jsx
+
+ (
+          <AuthGuard>
+            <Products />
+          </AuthGuard>
+        ),
+
+
+-----------------------
+
+>> ProductCreate.jsx and ProductUpdate.jsx
+
+const userRole = useSelector((state) => state.auth.user?.userRole);
+  console.log(userRole);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userRole !== "admin") {
+      navigate("/");
+    }
+  }, [userRole, navigate]);
+
+
+============================================================
+# Web Frontend_Backend MERN Project authController getUserProfile 
+
+// Get user profile (protected route)
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+============================================================
+# Web Frontend_Backend MERN Project authMiddleware 
+
+---
+>> .env
+
+JWT_SECRET=your_jwt_secret_key
+
+---
+
+>> middleware/authMiddleware.js
+
+import jwt from "jsonwebtoken";
+
+export const authenticateUser = (req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+
+  if (!token) {
+    return res.status(401).json({ message: "Access denied. No token provided." });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = { userId: decoded.userId, role: decoded.role };
+    next();
+  } catch (error) {
+    res.status(400).json({ message: "Invalid token" });
+  }
+};
