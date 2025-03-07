@@ -196,104 +196,104 @@ loader: singleProductLoader
 - create ProductCreate.jsx page
 - add to index.js
 
->> App.jsx
+> > App.jsx
 
 // actions
 import { action as createProductAction } from "./pages/ProductCreate";
 
 {
-  path: "/create-product",
-  element: <ProductCreate />,
-  action: createProductAction,
+path: "/create-product",
+element: <ProductCreate />,
+action: createProductAction,
 },
 
 - Create FormInput.jsx Component
 - add to index.js
 
->> FormInput.jsx
+> > FormInput.jsx
 
 // eslint-disable-next-line react/prop-types
 const FormInput = ({ label, name, type, defaultValue, size }) => {
-  return (
-    <div className="form-control">
-      <label htmlFor={name} className="label">
-        <span className="label-text capitalize">{label}</span>
-      </label>
-      <input
-        type={type}
-        name={name}
-        defaultValue={defaultValue}
-        className={`input input-bordered ${size}`}
-      />
-    </div>
-  );
+return (
+<div className="form-control">
+<label htmlFor={name} className="label">
+<span className="label-text capitalize">{label}</span>
+</label>
+<input
+type={type}
+name={name}
+defaultValue={defaultValue}
+className={`input input-bordered ${size}`}
+/>
+</div>
+);
 };
 export default FormInput;
 
-------------------
+---
+
 - Create SubmitBtn.jsx Component
 - add to index.js
 
->> SubmitBtn.jsx
+> > SubmitBtn.jsx
 
 import { Fragment } from "react";
 import { useNavigation } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const SubmitBtn = ({ text }) => {
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+const navigation = useNavigation();
+const isSubmitting = navigation.state === "submitting";
 
-  return (
-    <button
+return (
+<button
       type="submit"
       className="btn btn-primary btn-block"
       disabled={isSubmitting}
     >
-      {isSubmitting ? (
-        <Fragment>
-          <span className="loading loading-spinner"></span>
-          sending...
-        </Fragment>
-      ) : (
-        text || "submit"
-      )}
-    </button>
-  );
+{isSubmitting ? (
+<Fragment>
+<span className="loading loading-spinner"></span>
+sending...
+</Fragment>
+) : (
+text || "submit"
+)}
+</button>
+);
 };
 export default SubmitBtn;
 
+---
 
---------
->> ProductCreate.jsx
+> > ProductCreate.jsx
 
 import { Form, redirect } from "react-router-dom";
 import { FormInput, SubmitBtn } from "../components";
 import { customFetch } from "../utils";
 import { toast } from "react-toastify";
 
-
 const url = "/products";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const action = async ({ request }) => {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  try {
-    const response = await customFetch.post(url, data);
-    console.log(response);
-    toast.success("New product is added successfully");
-    return redirect("/");
-  } catch (error) {
-    const errorMessage =
-      error?.response?.data?.error?.message ||
-      "please double check your credentials";
+const formData = await request.formData();
+const data = Object.fromEntries(formData);
+try {
+const response = await customFetch.post(url, data);
+console.log(response);
+toast.success("New product is added successfully");
+return redirect("/");
+} catch (error) {
+const errorMessage =
+error?.response?.data?.error?.message ||
+"please double check your credentials";
 
     toast.error(errorMessage);
     return null;
-  }
-};
 
+}
+};
 
  <section className="h-screen grid ">
       <Form
@@ -313,7 +313,7 @@ export const action = async ({ request }) => {
 
 # Web Frontend_Backend MERN Project Delete Product 3-7
 
->> SingleProduct.jsx
+> > SingleProduct.jsx
 
  <section>
         <button onClick={deleteHandler} className="btn btn-primary capitalize">
@@ -321,45 +321,44 @@ export const action = async ({ request }) => {
         </button>
       </section>
 
-
 const navigate = useNavigate()
 
-  const deleteHandler = async () => {
-    try {
-      const response = await customFetch.delete(`${url}/${product._id}`);
-      console.log(response)
-       toast.success("product is deleted successfully");
-       return navigate("/");
-    } catch (error) {
-      const errorMessage =
-        error?.response?.data?.error?.message;
+const deleteHandler = async () => {
+try {
+const response = await customFetch.delete(`${url}/${product._id}`);
+console.log(response)
+toast.success("product is deleted successfully");
+return navigate("/");
+} catch (error) {
+const errorMessage =
+error?.response?.data?.error?.message;
 
       toast.error(errorMessage);
       return null;
     }
-    
-  };
+
+};
 
 ======================================================
-# Web Frontend_Backend MERN Project  Product Update Page 3-8
+
+# Web Frontend_Backend MERN Project Product Update Page 3-8
 
 - create ProductUpdate.jsx file in pages
 - add to index.jsx file in pages
 
->> App.jsx
+> > App.jsx
 
 import { loader as UpdateProductLoader } from "./pages/ProductUpdate";
 import { action as updateProductAction } from "./pages/ProductUpdate";
 
+{
+path: "/update-product/:id",
+element: <ProductUpdate />,
+loader: UpdateProductLoader, // use the loader to fetch the product details before rendering the update page
+action: updateProductAction, // use the action to update the product
+},
 
- {
-        path: "/update-product/:id",
-        element: <ProductUpdate />,
-        loader: UpdateProductLoader, // use the loader to fetch the product details before rendering the update page
-        action: updateProductAction, // use the action to update the product
-      },
-
->> 
+> >
 
  <Link
           to={`/update-product/${product._id}`}
@@ -368,7 +367,7 @@ import { action as updateProductAction } from "./pages/ProductUpdate";
           edit
         </Link>
 
->> ProductUpdate.jsx
+> > ProductUpdate.jsx
 
 import { toast } from "react-toastify";
 import { customFetch } from "../utils";
@@ -379,10 +378,10 @@ const url = "/products";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const loader = async ({ params }) => {
-  const { id } = params;
-  try {
-    const response = await customFetch(`${url}/${id}`);
-    const product = response.data;
+const { id } = params;
+try {
+const response = await customFetch(`${url}/${id}`);
+const product = response.data;
 
     if (!product) {
       toast.error("No product found!");
@@ -391,146 +390,143 @@ export const loader = async ({ params }) => {
 
     toast.success("Single Product is loaded!");
     return { product };
-  } catch (error) {
-    console.log(error)
-    toast.error("Failed to load product details.");
-    return redirect("/products"); // Redirect to a safe page
-  }
+
+} catch (error) {
+console.log(error)
+toast.error("Failed to load product details.");
+return redirect("/products"); // Redirect to a safe page
+}
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const action = async ({ request, params }) => {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+const formData = await request.formData();
+const data = Object.fromEntries(formData);
 
-  try {
-    await customFetch.put(`${url}/${params.id}`, data, {
-      headers: {
-        "Content-Type": "application/json", // Use JSON for non-file data
-      },
-    });
-    toast.success("Product updated successfully!");
-    return redirect(`/products/${params.id}`);
-  } catch (error) {
-    const errorMessage =
-      error?.response?.data?.error?.message ||
-      "Please double check your credentials.";
-    toast.error(errorMessage);
-    return null;
-  }
+try {
+await customFetch.put(`${url}/${params.id}`, data, {
+headers: {
+"Content-Type": "application/json", // Use JSON for non-file data
+},
+});
+toast.success("Product updated successfully!");
+return redirect(`/products/${params.id}`);
+} catch (error) {
+const errorMessage =
+error?.response?.data?.error?.message ||
+"Please double check your credentials.";
+toast.error(errorMessage);
+return null;
+}
 };
 
-
 const ProductUpdate = () => {
-  const { product } = useLoaderData();
-  const { tradeName, price } = product;
+const { product } = useLoaderData();
+const { tradeName, price } = product;
 
-  return (
-    <section className="h-screen grid items-start">
-      <Form
+return (
+<section className="h-screen grid items-start">
+<Form
         method="post"
         className="card w-96 p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
       >
-        <h4 className="text-center text-3xl font-bold capitalize">
-          Update Product
-        </h4>
-        <FormInput
-          type="text"
-          label="Trade Name"
-          name="tradeName"
-          defaultValue={tradeName || ""}
-          required
-        />
-        <FormInput
-          type="number"
-          label="Price"
-          name="price"
-          defaultValue={price || ""}
-          required
-        />
-        <div className="mt-4">
-          <SubmitBtn text="Update" />
-        </div>
-      </Form>
-    </section>
-  );
+<h4 className="text-center text-3xl font-bold capitalize">
+Update Product
+</h4>
+<FormInput
+type="text"
+label="Trade Name"
+name="tradeName"
+defaultValue={tradeName || ""}
+required
+/>
+<FormInput
+type="number"
+label="Price"
+name="price"
+defaultValue={price || ""}
+required
+/>
+<div className="mt-4">
+<SubmitBtn text="Update" />
+</div>
+</Form>
+</section>
+);
 };
 
 export default ProductUpdate;
 
-
 ======================================================
+
 # Web Frontend_Backend MERN Project Themes 3-9
 
->> Navbar.jsx
+> > Navbar.jsx
 
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
 
-{/* THEME SETUP */}
-            <label className="swap swap-rotate">
-              <input type="checkbox" />
-              {/* sun icon*/}
-              <BsSunFill className="swap-on h-4 w-4" />
-              {/* moon icon*/}
-              <BsMoonFill className="swap-off h-4 w-4" />
-            </label>
-
+{/_ THEME SETUP _/}
+<label className="swap swap-rotate">
+<input type="checkbox" />
+{/_ sun icon_/}
+<BsSunFill className="swap-on h-4 w-4" />
+{/_ moon icon_/}
+<BsMoonFill className="swap-off h-4 w-4" />
+</label>
 
 onChange={handleTheme}
 
-  const [theme, setTheme] = useState();
+const [theme, setTheme] = useState();
 
-  const handleTheme = () => {
-    setTheme(!theme);
-  };
-
+const handleTheme = () => {
+setTheme(!theme);
+};
 
 https://daisyui.com/docs/themes/
 
 https://www.youtube.com/watch?v=vFam7hEZTu8&list=PLhDKyjgkNJZWLEbxiVcAU-LFyEILyzYe8&index=13
 
->> tailwind.config.cjs
+> > tailwind.config.cjs
 
- daisyui: {
-    themes: ["winter", "dracula"],
-  },
+daisyui: {
+themes: ["winter", "dracula"],
+},
 
-
->> Navbar.jsx
-
+> > Navbar.jsx
 
 const themes = {
-  winter: "winter",
-  dracula: "dracula",
+winter: "winter",
+dracula: "dracula",
 };
 
-  const [theme, setTheme] = useState(themes.winter);
+const [theme, setTheme] = useState(themes.winter);
 
 const handleTheme = () => {
-    const { winter, dracula } = themes;
-    const newTheme = theme === winter ? dracula : winter;
-    document.documentElement.setAttribute("data-theme", theme);
+const { winter, dracula } = themes;
+const newTheme = theme === winter ? dracula : winter;
+document.documentElement.setAttribute("data-theme", theme);
 
     setTheme(newTheme);
-  };
 
-
-  useEffect(()=>{},[])
-
-useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const getThemeFromLocalStorage = () => {
-  return localStorage.getItem("theme") || themes.winter;
 };
 
-  const [theme, setTheme] = useState(getThemeFromLocalStorage());
+useEffect(()=>{},[])
 
---  
-======================================================
+useEffect(() => {
+document.documentElement.setAttribute("data-theme", theme);
+
+    localStorage.setItem("theme", theme);
+
+}, [theme]);
+
+const getThemeFromLocalStorage = () => {
+return localStorage.getItem("theme") || themes.winter;
+};
+
+const [theme, setTheme] = useState(getThemeFromLocalStorage());
+
+# --
+
 # Web Frontend_Backend MERN Project react-redux @reduxjs/toolkit 3-10
 
 https://react-redux.js.org/introduction/getting-started
@@ -541,40 +537,34 @@ https://redux-toolkit.js.org/introduction/getting-started
 
 https://www.npmjs.com/package/@reduxjs/toolkit
 
-
 - npm install react-redux @reduxjs/toolkit
 - create app and features and auth folders
 - create authSlice.js file
 - create store.js file
 
-
-
->> store.js
+> > store.js
 
 import { configureStore } from "@reduxjs/toolkit";
 
-
 export const store = configureStore({
-  reducer: {},
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+reducer: {},
+middleware: (getDefaultMiddleware) =>
+getDefaultMiddleware({
+serializableCheck: false,
+}),
 });
 
->> main.jsx
+> > main.jsx
 
 import { store } from "./app/store";
 import { Provider } from "react-redux";
-
 
 <Provider store={store}>
   <App />
   <ToastContainer position="bottom-right" autoClose={1000}/>
 </Provider>
 
-
->> authSlice.js
+> > authSlice.js
 
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -583,106 +573,107 @@ export const authSlice = createSlice({});
 export default authSlice.reducer;
 
 const initialState = {
-  user: null,
-  isError: false,
-  isSuccess: false,
-  isLoading: false,
-  message: "",
+user: null,
+isError: false,
+isSuccess: false,
+isLoading: false,
+message: "",
 };
 
- name: "auth",
-  initialState,
-  reducers: {}
+name: "auth",
+initialState,
+reducers: {}
 
-
->> store.js
+> > store.js
 
 import authReducer from "../app/features/auth/authSlice";
 
 auth: authReducer,
 
------------------------
+---
+
 redux devtools extension
 
---------------------
+---
 
 ======================================================
+
 # Web Frontend_Backend MERN Project Themes global 3-11
 
 https://www.youtube.com/watch?v=0vtP3SGlqMI&list=PLhDKyjgkNJZW7prwMpN4G_kBohsOCD4Iz&index=8
 
->> authSlice.js
+> > authSlice.js
 
 const themes = {
-  winter: "winter",
-  dracula: "dracula",
+winter: "winter",
+dracula: "dracula",
 };
 
 const getThemeFromLocalStorage = () => {
-  const theme = localStorage.getItem("theme") || themes.winter;
-  document.documentElement.setAttribute("data-theme", theme);
-  return theme;
+const theme = localStorage.getItem("theme") || themes.winter;
+document.documentElement.setAttribute("data-theme", theme);
+return theme;
 };
 
-  theme: getThemeFromLocalStorage(),
+theme: getThemeFromLocalStorage(),
 
-
- toggleTheme: (state) => {
-      const { dracula, winter } = themes;
-      state.theme = state.theme === dracula ? winter : dracula;
-      document.documentElement.setAttribute("data-theme", state.theme);
-      localStorage.setItem("theme", state.theme);
-    },
+toggleTheme: (state) => {
+const { dracula, winter } = themes;
+state.theme = state.theme === dracula ? winter : dracula;
+document.documentElement.setAttribute("data-theme", state.theme);
+localStorage.setItem("theme", state.theme);
+},
 
 export const { toggleTheme } = authSlice.actions;
 
->> Navbar.jsx
-import { useDispatch, useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+> > Navbar.jsx
+> > import { useDispatch, useSelector } from "react-redux";
+> > import { useDispatch } from "react-redux";
 
-  const dispatch = useDispatch();
-
+const dispatch = useDispatch();
 
     dispatch(toggleTheme());
+
 ============================================================
+
 # Web Frontend_Backend MERN Project User Model 3-12
 
-
->> server/models/UserModel.js
+> > server/models/UserModel.js
 
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
-  {
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
-  },
-  { timestamps: true }
+{
+username: { type: String, required: true, unique: true },
+email: { type: String, required: true, unique: true },
+password: { type: String, required: true },
+role: { type: String, enum: ["user", "admin"], default: "user" },
+},
+{ timestamps: true }
 );
 
 export const User = mongoose.model("User", userSchema);
 
-----
+---
+
 ============================================================
+
 # Web Frontend_Backend MERN Project bcryptjs jsonwebtoken 3-13
 
 https://www.npmjs.com/package/bcryptjs
 
-
 https://jwt.io/
 https://www.npmjs.com/package/jsonwebtoken
 
-
-
 ---
+
 ============================================================
-# Web Frontend_Backend MERN Project authController registerUser 3-14
+
+# Web Frontend_Backend MERN Project registerUser 3-14
 
 npm i bcryptjs jsonwebtoken
 
->> controllers/authController.js
+> > controllers/authController.js
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -690,8 +681,8 @@ import { User } from "../models/userModel.js";
 
 // Register a new user
 export const registerUser = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+try {
+const { username, email, password } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -712,20 +703,41 @@ export const registerUser = async (req, res) => {
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
+
+} catch (error) {
+res.status(500).json({ message: "Server error", error });
+}
 };
 
-============================================================
-# Web Frontend_Backend MERN Project authController loginUser 3-15
+> > routes/authRoutes.js
 
->> controllers/authController.js
+import express from "express";
+import { registerUser } from "../controllers/authController.js";
+
+const router = express.Router();
+
+// Public routes
+router.post("/register", registerUser);
+
+export default router;
+
+> > index.js
+
+import authRoutes from "./routes/authRoutes.js";
+
+// Routes
+app.use("/api/auth", authRoutes);
+
+============================================================
+
+# Web Frontend_Backend MERN Project loginUser 3-15
+
+> > controllers/authController.js
 
 // Login user
 export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+try {
+const { email, password } = req.body;
 
     // Find user by email
     const user = await User.findOne({ email });
@@ -746,17 +758,196 @@ export const loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ message: "Login successful", token });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
+
+   res
+.status(200)
+.json({
+message: "Login successful",
+token,
+username: user.username,
+role: user.role,
+});
+
+} catch (error) {
+res.status(500).json({ message: "Server error", error });
+}
 };
+
+> > routes/authRoutes.js
+
+import { registerUser, loginUser } from "../controllers/authController.js";
+
+router.post("/login", loginUser);
 
 
 ============================================================
-# Web Frontend_Backend MERN Project  authRoutes 3-18
 
->> routes/authRoutes.js
+# Web Frontend_Backend MERN Project Register Page 3-16
+
+> > Register.jsx
+
+import { Form, Link, redirect } from "react-router-dom";
+import { FormInput, SubmitBtn } from "../components";
+import { customFetch } from "../utils";
+import { toast } from "react-toastify";
+
+const url = "/auth/register";
+
+export const action = async ({ request }) => {
+const formData = await request.formData();
+const data = Object.fromEntries(formData);
+console.log(data);
+try {
+const response = await customFetch.post(url, data);
+console.log(response.data.message);
+toast.success(response.data.message);
+return redirect("/login");
+} catch (error) {
+const errorMessage =
+error?.response?.data?.error?.message ||
+"please double check your credentials";
+
+    toast.error(errorMessage);
+    return null;
+
+}
+};
+
+const Register = () => {
+return (
+<section className="h-screen grid place-items-center">
+<Form
+        method="POST"
+        className="card w-96 p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
+      >
+<h4 className="text-center text-3xl font-bold">Register</h4>
+<FormInput type="text" label="username" name="username" />
+<FormInput type="email" label="email" name="email" />
+<FormInput type="password" label="password" name="password" />
+<div className="mt-4">
+<SubmitBtn text="register" />
+</div>
+<p className="text-center">
+Already a member?
+<Link
+            to="/login"
+            className="ml-2 link link-hover link-primary capitalize"
+          >
+login
+</Link>
+</p>
+</Form>
+</section>
+);
+};
+
+export default Register;
+
+> > App.jsx
+
+import { action as registerAction } from "./pages/Register";
+
+action: registerAction, // use the action to register a new user
+
+============================================================
+
+# Web Frontend_Backend MERN Project Login Page 3-17
+
+> > Login.jsx
+
+import { Form, Link, redirect } from "react-router-dom";
+import { FormInput, SubmitBtn } from "../components";
+import { customFetch } from "../utils";
+import { toast } from "react-toastify";
+import { loginUser } from "../app/features/auth/authSlice";
+
+const url = "/auth/login";
+
+export const action =
+(store) =>
+async ({ request }) => {
+const formData = await request.formData();
+const data = Object.fromEntries(formData);
+console.log(data);
+try {
+const response = await customFetch.post(url, data);
+console.log(response.data);
+store.dispatch(loginUser(response.data));
+toast.success("logged in successfully");
+return redirect("/");
+} catch (error) {
+const errorMessage =
+error?.response?.data?.error?.message ||
+"please double check your credentials";
+
+      toast.error(errorMessage);
+      return null;
+    }
+
+};
+
+const Login = () => {
+return (
+<section className="h-screen grid place-items-center">
+<Form
+        method="post"
+        className="card w-96  p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
+      >
+<h4 className="text-center text-3xl font-bold">Login</h4>
+<FormInput type="email" label="email" name="email" />
+<FormInput type="password" label="password" name="password" />
+<div className="mt-4">
+<SubmitBtn text="login" />
+</div>
+<p className="text-center">
+Not a member yet?{" "}
+<Link
+            to="/register"
+            className="ml-2 link link-hover link-primary capitalize"
+          >
+register
+</Link>
+<Link to="/" className="ml-2 link link-hover link-primary capitalize">
+home
+</Link>
+</p>
+</Form>
+</section>
+);
+};
+
+export default Login;
+
+> > App.jsx
+
+import { action as loginAction } from "./pages/Login";
+
+action: loginAction, // use the action to login a user
+
+---
+
+> > authSlice.js
+
+loginUser: (state, action) => {
+console.log(action);
+const user = {
+username: action.payload.username,
+userRole: action.payload.role,
+token: action.payload.jwt,
+};
+state.user = user;
+localStorage.setItem("user", JSON.stringify(user));
+},
+
+---
+
+
+
+============================================================
+
+# Web Frontend_Backend MERN Project authRoutes
+
+> > routes/authRoutes.js
 
 import express from "express";
 import { registerUser, loginUser, getUserProfile } from "../controllers/authController.js";
@@ -773,16 +964,10 @@ router.get("/profile", authenticateUser, getUserProfile);
 
 export default router;
 
-----
-
->> index.js
-
-import authRoutes from "./routes/authRoutes.js";
-
-// Routes
-app.use("/api/auth", authRoutes);
+---
 
 ---
+
 Testing the API
 
 Register a User :
@@ -798,336 +983,167 @@ Get Profile :
 GET /api/auth/profile
 Header: Authorization: Bearer your_jwt_token
 
-============================================================
-# Web Frontend_Backend MERN Project  Register Page 3-19
+
+> > authController.js
 
 
->> Register.jsx
 
-import { Form, Link, redirect } from "react-router-dom";
-import { FormInput, SubmitBtn } from "../components";
-import { customFetch } from "../utils";
-import { toast } from "react-toastify";
-
-const url = "/auth/register";
-
-export const action = async ({ request }) => {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  console.log(data);
-  try {
-    const response = await customFetch.post(url, data);
-    console.log(response.data.message);
-    toast.success(response.data.message);
-    return redirect("/login");
-  } catch (error) {
-    const errorMessage =
-      error?.response?.data?.error?.message ||
-      "please double check your credentials";
-
-    toast.error(errorMessage);
-    return null;
-  }
-};
-
-const Register = () => {
-  return (
-    <section className="h-screen grid place-items-center">
-      <Form
-        method="POST"
-        className="card w-96 p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
-      >
-        <h4 className="text-center text-3xl font-bold">Register</h4>
-        <FormInput type="text" label="username" name="username" />
-        <FormInput type="email" label="email" name="email" />
-        <FormInput type="password" label="password" name="password" />
-        <div className="mt-4">
-          <SubmitBtn text="register" />
-        </div>
-        <p className="text-center">
-          Already a member?
-          <Link
-            to="/login"
-            className="ml-2 link link-hover link-primary capitalize"
-          >
-            login
-          </Link>
-        </p>
-      </Form>
-    </section>
-  );
-};
-
-export default Register;
-
-
->> App.jsx
-
-import { action as registerAction } from "./pages/Register";
-
-action: registerAction, // use the action to register a new user
-
-============================================================
-# Web Frontend_Backend MERN Project  Login Page 3-20
-
-
->> Login.jsx
-
-import { Form, Link, redirect } from "react-router-dom";
-import { FormInput, SubmitBtn } from "../components";
-import { customFetch } from "../utils";
-import { toast } from "react-toastify";
-import { loginUser } from "../app/features/auth/authSlice";
-
-const url = "/auth/login";
-
-export const action =
-  (store) =>
-  async ({ request }) => {
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData);
-    console.log(data);
-    try {
-      const response = await customFetch.post(url, data);
-      console.log(response.data);
-      store.dispatch(loginUser(response.data));
-      toast.success("logged in successfully");
-      return redirect("/");
-    } catch (error) {
-      const errorMessage =
-        error?.response?.data?.error?.message ||
-        "please double check your credentials";
-
-      toast.error(errorMessage);
-      return null;
-    }
-  };
-
-const Login = () => {
-  return (
-    <section className="h-screen grid place-items-center">
-      <Form
-        method="post"
-        className="card w-96  p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
-      >
-        <h4 className="text-center text-3xl font-bold">Login</h4>
-        <FormInput type="email" label="email" name="email" />
-        <FormInput type="password" label="password" name="password" />
-        <div className="mt-4">
-          <SubmitBtn text="login" />
-        </div>
-        <p className="text-center">
-          Not a member yet?{" "}
-          <Link
-            to="/register"
-            className="ml-2 link link-hover link-primary capitalize"
-          >
-            register
-          </Link>
-          <Link to="/" className="ml-2 link link-hover link-primary capitalize">
-            home
-          </Link>
-        </p>
-      </Form>
-    </section>
-  );
-};
-
-export default Login;
-
-
->> App.jsx
-
-import { action as loginAction } from "./pages/Login";
-
-action: loginAction, // use the action to login a user
-
----------------
->> authSlice.js
-
-loginUser: (state, action) => {
-      console.log(action);
-      const user = {
-        username: action.payload.username,
-        userRole: action.payload.role,
-        token: action.payload.jwt,
-      };
-      state.user = user;
-      localStorage.setItem("user", JSON.stringify(user));
-    },
-
---------------
->> authController.js
-
-res
-      .status(200)
-      .json({
-        message: "Login successful",
-        token,
-        username: user.username,
-        role: user.role,
-      });
-
-
->> Header.jsx
+> > Header.jsx
 
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const Header = () => {
 
-  const user = useSelector((state) => state.auth.user);
+const user = useSelector((state) => state.auth.user);
 
-  console.log(user.username)
+console.log(user.username)
 
-  return (
-    <header className=" bg-neutral py-2 text-neutral-content ">
-      <div className="align-element flex justify-center sm:justify-end ">
-        {user ? (
-          <div className="flex gap-x-2 sm:gap-x-8 items-center">
-            <p className="text-xs sm:text-sm">Hello, {user.username}</p>
-            <button
-              className="btn btn-xs btn-outline btn-primary "
-              // onClick={handleLogout}
-            >
-              logout
-            </button>
-          </div>
-        ) : (
-          <div className="flex gap-x-6 justify-center items-center">
-            <Link to="/login" className="link link-hover text-xs sm:text-sm">
-              Sign in / Guest
-            </Link>
-            <Link to="/register" className="link link-hover text-xs sm:text-sm">
-              Create an Account
-            </Link>
-          </div>
-        )}
-      </div>
-    </header>
-  );
+return (
+<header className=" bg-neutral py-2 text-neutral-content ">
+<div className="align-element flex justify-center sm:justify-end ">
+{user ? (
+<div className="flex gap-x-2 sm:gap-x-8 items-center">
+<p className="text-xs sm:text-sm">Hello, {user.username}</p>
+<button
+className="btn btn-xs btn-outline btn-primary "
+// onClick={handleLogout} >
+logout
+</button>
+</div>
+) : (
+<div className="flex gap-x-6 justify-center items-center">
+<Link to="/login" className="link link-hover text-xs sm:text-sm">
+Sign in / Guest
+</Link>
+<Link to="/register" className="link link-hover text-xs sm:text-sm">
+Create an Account
+</Link>
+</div>
+)}
+</div>
+</header>
+);
 };
 
 export default Header;
 
-----------------------------
+---
 
->> authSlice.js
+> > authSlice.js
 
 logoutUser: (state) => {
-      state.user = null;
-      // localStorage.clear()
-      localStorage.removeItem("user");
-      toast.success("Logged out successfully");
-    },
-
-
+state.user = null;
+// localStorage.clear()
+localStorage.removeItem("user");
+toast.success("Logged out successfully");
+},
 
     export const { loginUser, toggleTheme ,logoutUser} = authSlice.actions;
 
-
->>  Header.jsx
+> > Header.jsx
 
 onClick={handleLogout}
 
-
 const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const handleLogout = () => {
-    navigate("/");
-    dispatch(logoutUser());
-  };
+const dispatch = useDispatch();
+const handleLogout = () => {
+navigate("/");
+dispatch(logoutUser());
+};
 
-------------
+---
 
->> AuthGuard.jsx
+> > AuthGuard.jsx
 
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const AuthGuard = ({ children }) => {
-  const isAuthenticated = useSelector((state) => state.auth.user);
+const isAuthenticated = useSelector((state) => state.auth.user);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
+if (!isAuthenticated) {
+return <Navigate to="/login" />;
+}
 
-  return children;
+return children;
 };
 
 export default AuthGuard;
 
---------------------
+---
 
->> App.jsx
+> > App.jsx
 
- (
-          <AuthGuard>
-            <Products />
-          </AuthGuard>
-        ),
+(
+<AuthGuard>
+<Products />
+</AuthGuard>
+),
 
+---
 
------------------------
-
->> ProductCreate.jsx and ProductUpdate.jsx
+> > ProductCreate.jsx and ProductUpdate.jsx
 
 const userRole = useSelector((state) => state.auth.user?.userRole);
-  console.log(userRole);
+console.log(userRole);
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
-  useEffect(() => {
-    if (userRole !== "admin") {
-      navigate("/");
-    }
-  }, [userRole, navigate]);
-
+useEffect(() => {
+if (userRole !== "admin") {
+navigate("/");
+}
+}, [userRole, navigate]);
 
 ============================================================
-# Web Frontend_Backend MERN Project authController getUserProfile 
+
+# Web Frontend_Backend MERN Project authController getUserProfile
 
 // Get user profile (protected route)
 export const getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+try {
+const user = await User.findById(req.user.userId).select("-password");
+if (!user) {
+return res.status(404).json({ message: "User not found" });
+}
 
     res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
+
+} catch (error) {
+res.status(500).json({ message: "Server error", error });
+}
 };
 
 ============================================================
-# Web Frontend_Backend MERN Project authMiddleware 
+
+# Web Frontend_Backend MERN Project authMiddleware
 
 ---
->> .env
+
+> > .env
 
 JWT_SECRET=your_jwt_secret_key
 
 ---
 
->> middleware/authMiddleware.js
+> > middleware/authMiddleware.js
 
 import jwt from "jsonwebtoken";
 
 export const authenticateUser = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+const token = req.header("Authorization")?.replace("Bearer ", "");
 
-  if (!token) {
-    return res.status(401).json({ message: "Access denied. No token provided." });
-  }
+if (!token) {
+return res.status(401).json({ message: "Access denied. No token provided." });
+}
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { userId: decoded.userId, role: decoded.role };
-    next();
-  } catch (error) {
-    res.status(400).json({ message: "Invalid token" });
-  }
+try {
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
+req.user = { userId: decoded.userId, role: decoded.role };
+next();
+} catch (error) {
+res.status(400).json({ message: "Invalid token" });
+}
 };
