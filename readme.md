@@ -943,6 +943,125 @@ localStorage.setItem("user", JSON.stringify(user));
 
 
 
+
+============================================================
+# Web Frontend_Backend MERN Project logoutUser  3-18
+
+
+> > Header.jsx
+
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+const Header = () => {
+
+const user = useSelector((state) => state.auth.user);
+
+console.log(user.username)
+
+return (
+<header className=" bg-neutral py-2 text-neutral-content ">
+<div className="align-element flex justify-center sm:justify-end ">
+{user ? (
+<div className="flex gap-x-2 sm:gap-x-8 items-center">
+<p className="text-xs sm:text-sm">Hello, {user.username}</p>
+<button
+className="btn btn-xs btn-outline btn-primary "
+// onClick={handleLogout} >
+logout
+</button>
+</div>
+) : (
+<div className="flex gap-x-6 justify-center items-center">
+<Link to="/login" className="link link-hover text-xs sm:text-sm">
+Sign in / Guest
+</Link>
+<Link to="/register" className="link link-hover text-xs sm:text-sm">
+Create an Account
+</Link>
+</div>
+)}
+</div>
+</header>
+);
+};
+
+export default Header;
+
+--------------
+> > Header.jsx
+
+onClick={handleLogout}
+
+const navigate = useNavigate();
+const dispatch = useDispatch();
+const handleLogout = () => {
+navigate("/");
+dispatch(logoutUser());
+};
+
+---
+
+
+---
+> > authSlice.js
+
+logoutUser: (state) => {
+state.user = null;
+// localStorage.clear()
+localStorage.removeItem("user");
+toast.success("Logged out successfully");
+},
+
+    export const { loginUser, toggleTheme ,logoutUser} = authSlice.actions;
+============================================================
+# Web Frontend_Backend MERN Project AuthGuard  3-18
+
+
+> > AuthGuard.jsx
+
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+
+// eslint-disable-next-line react/prop-types
+const AuthGuard = ({ children }) => {
+const isAuthenticated = useSelector((state) => state.auth.user);
+
+if (!isAuthenticated) {
+return <Navigate to="/login" />;
+}
+
+return children;
+};
+
+export default AuthGuard;
+------------------
+---
+
+> > App.jsx
+
+(
+<AuthGuard>
+<Products />
+</AuthGuard>
+),
+
+---
+> > ProductCreate.jsx and ProductUpdate.jsx
+
+const userRole = useSelector((state) => state.auth.user?.userRole);
+console.log(userRole);
+
+const navigate = useNavigate();
+
+useEffect(() => {
+if (userRole !== "admin") {
+navigate("/");
+}
+}, [userRole, navigate]);
+
+
+
 ============================================================
 
 # Web Frontend_Backend MERN Project authRoutes
@@ -988,114 +1107,13 @@ Header: Authorization: Bearer your_jwt_token
 
 
 
-> > Header.jsx
 
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
-const Header = () => {
 
-const user = useSelector((state) => state.auth.user);
 
-console.log(user.username)
 
-return (
-<header className=" bg-neutral py-2 text-neutral-content ">
-<div className="align-element flex justify-center sm:justify-end ">
-{user ? (
-<div className="flex gap-x-2 sm:gap-x-8 items-center">
-<p className="text-xs sm:text-sm">Hello, {user.username}</p>
-<button
-className="btn btn-xs btn-outline btn-primary "
-// onClick={handleLogout} >
-logout
-</button>
-</div>
-) : (
-<div className="flex gap-x-6 justify-center items-center">
-<Link to="/login" className="link link-hover text-xs sm:text-sm">
-Sign in / Guest
-</Link>
-<Link to="/register" className="link link-hover text-xs sm:text-sm">
-Create an Account
-</Link>
-</div>
-)}
-</div>
-</header>
-);
-};
 
-export default Header;
 
----
-
-> > authSlice.js
-
-logoutUser: (state) => {
-state.user = null;
-// localStorage.clear()
-localStorage.removeItem("user");
-toast.success("Logged out successfully");
-},
-
-    export const { loginUser, toggleTheme ,logoutUser} = authSlice.actions;
-
-> > Header.jsx
-
-onClick={handleLogout}
-
-const navigate = useNavigate();
-const dispatch = useDispatch();
-const handleLogout = () => {
-navigate("/");
-dispatch(logoutUser());
-};
-
----
-
-> > AuthGuard.jsx
-
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-
-// eslint-disable-next-line react/prop-types
-const AuthGuard = ({ children }) => {
-const isAuthenticated = useSelector((state) => state.auth.user);
-
-if (!isAuthenticated) {
-return <Navigate to="/login" />;
-}
-
-return children;
-};
-
-export default AuthGuard;
-
----
-
-> > App.jsx
-
-(
-<AuthGuard>
-<Products />
-</AuthGuard>
-),
-
----
-
-> > ProductCreate.jsx and ProductUpdate.jsx
-
-const userRole = useSelector((state) => state.auth.user?.userRole);
-console.log(userRole);
-
-const navigate = useNavigate();
-
-useEffect(() => {
-if (userRole !== "admin") {
-navigate("/");
-}
-}, [userRole, navigate]);
 
 ============================================================
 
